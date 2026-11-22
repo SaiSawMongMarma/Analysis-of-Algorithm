@@ -1,0 +1,44 @@
+#include <stdio.h>
+int main() {
+    int n;
+
+    printf("Enter number of segments: ");
+    scanf("%d", &n);
+
+    int base[n], limit[n];
+
+    // Input segment table
+    printf("\nEnter Base and Length for each segment:\n");
+    for (int i = 0; i < n; i++) {
+        printf("Segment %d -> Base and Length: ", i);
+        scanf("%d %d", &base[i], &limit[i]);
+    }
+
+    int m;
+    printf("\nEnter number of logical addresses to convert: ");
+    scanf("%d", &m);
+
+    int seg_no, offset;
+
+    printf("\nSegment\tOffset\tResult\n");
+    printf("-------------------------------\n");
+
+    // Loop for each logical address
+    for (int i = 0; i < m; i++) {
+        printf("Enter logical address %d (segment offset): ", i + 1);
+        scanf("%d %d", &seg_no, &offset);
+
+        if (seg_no < 0 || seg_no >= n) {
+            printf("Invalid segment number!\n");
+        }
+        else if (offset >= limit[seg_no]) {
+            printf("%d\t%d\tInvalid (offset exceeds limit %d)\n", seg_no, offset, limit[seg_no]);
+        }
+        else {
+            int physical_address = base[seg_no] + offset;
+            printf("%d\t%d\tPhysical Address = %d\n", seg_no, offset, physical_address);
+        }
+    }
+
+    return 0;
+}
