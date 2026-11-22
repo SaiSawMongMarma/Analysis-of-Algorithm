@@ -1,0 +1,91 @@
+#include <stdio.h>
+#include <limits.h>
+
+#define MAX 20
+
+// Function Prototypes
+void matrix_chain_order(int p[], int n, int m[MAX][MAX], int s[MAX][MAX]);
+void print_optimal_parens(int s[MAX][MAX], int i, int j);
+
+int main() {
+    int n;
+    int p[MAX + 1]; // Dimension vector array to store n + 1 elements
+
+    int m[MAX][MAX]; // Cost table
+    int s[MAX][MAX]; // Split table
+
+    // 1. Get the total number of matrices from the user cleanly
+    printf("Enter the total number of matrices: ");
+    scanf("%d", &n);
+
+    if (n < 1) {
+        printf("Invalid number of matrices. Exiting.\n");
+        return 1;
+    }
+
+    // 2. Get the dimensions vector array values from the user
+    printf("Enter the %d dimensions for the matrix chain vector (p):\n", n + 1);
+    for (int i = 0; i <= n; i++) {
+        printf("p[%d]: ", i);
+        scanf("%d", &p[i]);
+    }
+
+    printf("\nMatrix Dimension Vector: ");
+    for (int i = 0; i <= n; i++) {
+        printf("%d ", p[i]);
+    }
+    printf("\n\n");
+
+    // Step 1: Run the tabulation algorithm to fill tables m and s
+    matrix_chain_order(p, n, m, s);
+
+    // Step 2: Output results
+    printf("Minimum scalar multiplications required: %d\n", m[1][n]);
+
+    printf("Optimal Parenthesization Structure: ");
+    print_optimal_parens(s, 1, n);
+    printf("\n");
+
+    return 0;
+}
+
+// Slide Algorithm: Computes the cost matrix m using the Bottom-Up approach
+void matrix_chain_order(int p[], int n, int m[MAX][MAX], int s[MAX][MAX]) {
+    // Base Case initialization: single matrix costs 0 operations
+    for (int i = 1; i <= n; i++) {
+        m[i][i] = 0;
+    }
+
+    // Main DP loop structure
+    // l is the chain length
+    for (int l = 2; l <= n; l++) {
+        for (int i = 1; i <= n - l + 1; i++) {
+            int j = i + l - 1;
+            m[i][j] = INT_MAX; // Sets cell cost to infinity
+
+            // Try all possible split positions k between i and j-1
+            for (int k = i; k <= j - 1; k++) {
+                // Cost calculation formula
+                int q = m[i][k] + m[k + 1][j] + p[i - 1] * p[k] * p[j];
+
+                // If a cheaper split point is found, update cost and split location
+                if (q < m[i][j]) {
+                    m[i][j] = q;
+                    s[i][j] = k;   // Remembers the best split position
+                }
+            }
+        }
+    }
+}
+
+// Helper Function: Recursively traces the split choices to output parenthesization
+void print_optimal_parens(int s[MAX][MAX], int i, int j) {
+    if (i == j) {
+        printf("A%d", i);
+    } else {
+        printf("(");
+        print_optimal_parens(s, i, s[i][j]);     // Recurse left side of split
+        print_optimal_parens(s, s[i][j] + 1, j); // Recurse right side of split
+        printf(")");
+    }
+}

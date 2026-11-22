@@ -1,0 +1,72 @@
+
+#include <stdio.h>
+
+int main() {
+    int n;
+
+    // 1. Take array size input from user
+    printf("Enter the number of elements: ");
+    scanf("%d", &n);
+
+    int A[n]; // Input array
+    int B[n]; // Temporary output array for counting sort step
+
+    // 2. Take array elements input from user
+    printf("Enter %d elements: ", n);
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &A[i]);
+    }
+
+    // 3. Find the maximum value in array A to determine the number of digits
+    int max = A[0];
+    for (int i = 1; i < n; i++) {
+        if (A[i] > max) {
+            max = A[i];
+        }
+    }
+
+    // 4. Radix Sort Loop: Run counting sort for every digit position (1s, 10s, 100s...)
+    // 'exp' represents the current place value (1, 10, 100, etc.)
+    for (int exp = 1; max / exp > 0; exp *= 10) {
+
+        // Count array for decimal digits (0 to 9)
+        int C[10];
+
+        // Initialize all elements of array C to 0
+        for (int i = 0; i < 10; i++) {
+            C[i] = 0;
+        }
+
+        // Store the frequency of the current digit of each number
+        for (int i = 0; i < n; i++) {
+            int digit = (A[i] / exp) % 10;
+            C[digit] = C[digit] + 1;
+        }
+
+        // Calculate the cumulative sum in C
+        for (int i = 1; i < 10; i++) {
+            C[i] = C[i] + C[i - 1];
+        }
+
+        // Build the temporary output array B (loop runs backwards for stability)
+        for (int i = n - 1; i >= 0; i--) {
+            int digit = (A[i] / exp) % 10;
+            B[C[digit] - 1] = A[i];
+            C[digit] = C[digit] - 1;
+        }
+
+        // Copy the sorted numbers of this pass back to original array A
+        for (int i = 0; i < n; i++) {
+            A[i] = B[i];
+        }
+    }
+
+    // 5. Print the final sorted array
+    printf("Sorted array: ");
+    for (int i = 0; i < n; i++) {
+        printf("%d ", A[i]);
+    }
+    printf("\n");
+
+    return 0;
+}

@@ -1,0 +1,60 @@
+#include <stdio.h>
+
+int main() {
+    int n;
+
+    // 1. Take array size input from user
+    printf("Enter the number of elements: ");
+    scanf("%d", &n);
+
+    int A[n]; // Input array
+    int B[n]; // Sorted output array
+
+    // 2. Take array elements input from user (0-based indexing)
+    printf("Enter %d elements: ", n);
+    for (int j = 0; j < n; j++) {
+        scanf("%d", &A[j]);
+    }
+
+    // 3. Find the maximum value (k) in array A
+    int k = A[0];
+    for (int j = 1; j < n; j++) {
+        if (A[j] > k) {
+            k = A[j];
+        }
+    }
+
+    // 4. Create the count array C[0..k]
+    int C[k + 1];
+
+    // 5. Initialize all elements of array C to 0
+    for (int i = 0; i <= k; i++) {
+        C[i] = 0;
+    }
+
+    // 6. Store the count of each element of A in C
+    for (int j = 0; j < n; j++) {
+        C[A[j]] = C[A[j]] + 1;
+    }
+
+    // 7. Calculate the cumulative sum in C (loop runs from 1 to k)
+    for (int i = 1; i <= k; i++) {
+        C[i] = C[i] + C[i - 1];
+    }
+
+    // 8. Place elements into sorted positions in array B (loop runs backwards from n-1 to 0)
+    for (int j = n - 1; j >= 0; j--) {
+        B[C[A[j]] - 1] = A[j]; // Subtracted 1 for 0-based indexing
+        C[A[j]] = C[A[j]] - 1;
+    }
+
+    // 9. Print the final sorted array B
+    printf("Sorted array: ");
+    for (int j = 0; j < n; j++) {
+        printf("%d ", B[j]);
+    }
+    printf("\n");
+
+    return 0;
+}
+
